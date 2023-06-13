@@ -1,0 +1,193 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"liqpro/exchanges/bitstamp"
+	disruptor "liqpro/shared/disruptor/parser"
+	"os"
+	"os/signal"
+)
+
+var mapChannels map[string]string = map[string]string{
+	"order_book_btceur": "btceur",
+	"order_book_btcusd": "btcusd",
+}
+
+var markets = []string{"btceur", "btcusd"}
+var orderbookSnapshot = make(map[string]bool, len(markets))
+var orderbookSnapshotMicrotimestamp = make(map[string]int64, len(markets))
+
+var microtimestampByMarket = make(map[string]int64, len(markets))
+
+var lastProcessedEventMicroTimestamp int64 = 0
+
+var asks = map[string]map[string]string{}
+var bids = map[string]map[string]string{}
+
+var mutexMarkets *disruptor.MutexMarkets
+var eventQueue *EventQueue
+
+var FirstConsumer = NewConsumer()
+
+func main() {
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+	mutexMarkets = disruptor.SetMutexes(&markets)
+	eventQueue = SetEventQueue(&markets)
+
+	wsDepthHandler := disruptor.Disruptor(
+		FirstConsumer,
+		// NewConsumer(),
+	)
+	go bitstamp.WsDepthServe(markets, bitstamp.WsDepthHandler(wsDepthHandler))
+
+	for _, market := range markets {
+		orderbookSnapshot[market] = false
+		asks[market] = map[string]string{}
+		bids[market] = map[string]string{}
+
+		orderbook, err := bitstamp.GetOrderBook(market)
+		if err != nil {
+			fmt.Println("Error getting orderbook:", err)
+			continue
+		}
+		orderbookSnapshotMicrotimestamp[market] = orderbook.Microtimestamp
+		microtimestampByMarket[market] = orderbook.Microtimestamp
+		temporaryConsumer := &Consumer{
+			B: disruptor.ConsumerBase{
+				Platform: "bitstamp",
+				Market:   market,
+			},
+		}
+
+		temporaryConsumer.B.Action = "1"
+
+		for _, ask := range orderbook.Asks[:100] {
+
+			temporaryConsumer.B.Price = ask[0]
+			temporaryConsumer.B.Volume = ask[1]
+			Upsert(temporaryConsumer)
+			asks[market][ask[0]] = ask[1]
+		}
+
+		temporaryConsumer.B.Action = "0"
+
+		for _, bid := range orderbook.Bids[:100] {
+			temporaryConsumer.B.Price = bid[0]
+			temporaryConsumer.B.Volume = bid[1]
+			Upsert(temporaryConsumer)
+			bids[market][bid[0]] = bid[1]
+		}
+
+	}
+
+	for {
+		select {
+		case <-interrupt:
+			fmt.Println("interrupt")
+			return
+		}
+	}
+
+}
+
+func parser(msg *[]byte, csm *Consumer) {
+
+	csm.err = json.Unmarshal(*msg, csm.event)
+	if csm.err != nil {
+		fmt.Println("error unmarshalling", string(*msg), csm.err)
+	}
+	csm.B.Market = mapChannels[csm.event.Channel]
+
+	if !orderbookSnapshot[csm.B.Market] {
+		//Push
+		csm.microtimestamp, csm.ok = orderbookSnapshotMicrotimestamp[csm.B.Market]
+		if csm.ok {
+			// microtimestamp
+
+			for i := 0; i < len((*eventQueue)[csm.B.Market]); i++ {
+				if (*eventQueue)[csm.B.Market][i].Data.Microtimestamp > csm.microtimestamp {
+					ProcessEvent(csm, (*eventQueue)[csm.B.Market][i])
+				}
+			}
+			orderbookSnapshot[csm.B.Market] = true
+
+		} else {
+			(*eventQueue)[csm.B.Market] = append((*eventQueue)[csm.B.Market], csm.event)
+		}
+
+	} else {
+		ProcessEvent(csm, csm.event)
+	}
+
+}
+
+// ProcessEvent process event to populate map and DB
+func ProcessEvent(csm *Consumer, event *bitstamp.WsDepthEvent) {
+
+	(*mutexMarkets)[csm.B.Market].Lock()
+	defer (*mutexMarkets)[csm.B.Market].Unlock()
+
+	if microtimestampByMarket[csm.B.Market] >= event.Data.Microtimestamp {
+		fmt.Println("TOO LATE !!!!!!!!!!!")
+		return
+	}
+
+	microtimestampByMarket[csm.B.Market] = event.Data.Microtimestamp
+
+	csm.B.Action = "1"
+	csm.dataLen = len(event.Data.Asks)
+	firstLen := len(asks[csm.B.Market])
+	for csm.i = 0; csm.i < csm.dataLen; csm.i++ {
+		if csm.previousVolume, csm.ok = asks[csm.B.Market][event.Data.Asks[csm.i][0]]; csm.ok {
+			csm.B.Price = event.Data.Asks[csm.i][0]
+			csm.B.Volume = csm.previousVolume
+			Del(csm)
+		}
+		if event.Data.Asks[csm.i][1] != "0.00000000" {
+			csm.B.Price = event.Data.Asks[csm.i][0]
+			csm.B.Volume = event.Data.Asks[csm.i][1]
+			Upsert(csm)
+			asks[csm.B.Market][event.Data.Asks[csm.i][0]] = event.Data.Asks[csm.i][1]
+		} else {
+			delete(asks[csm.B.Market], event.Data.Asks[csm.i][0])
+		}
+
+	}
+	fmt.Println(len(asks[csm.B.Market]) - firstLen)
+
+	csm.B.Action = "0"
+	csm.dataLen = len(event.Data.Bids)
+	firstLen = len(bids[csm.B.Market])
+	for csm.i = 0; csm.i < csm.dataLen; csm.i++ {
+		if csm.previousVolume, csm.ok = bids[csm.B.Market][event.Data.Bids[csm.i][0]]; csm.ok {
+			csm.B.Price = event.Data.Bids[csm.i][0]
+			csm.B.Volume = csm.previousVolume
+			Del(csm)
+		}
+		if event.Data.Bids[csm.i][1] != "0.00000000" {
+			csm.B.Price = event.Data.Bids[csm.i][0]
+			csm.B.Volume = event.Data.Bids[csm.i][1]
+			Upsert(csm)
+			bids[csm.B.Market][event.Data.Bids[csm.i][0]] = event.Data.Bids[csm.i][1]
+		} else {
+			delete(bids[csm.B.Market], event.Data.Bids[csm.i][0])
+		}
+	}
+	fmt.Println(len(bids[csm.B.Market]) - firstLen)
+
+	return
+}
+
+func Del(csm *Consumer) {
+	// 000000
+
+	disruptor.Del(&csm.B)
+
+}
+func Upsert(csm *Consumer) {
+	// 000000
+
+	disruptor.Upsert(&csm.B)
+}

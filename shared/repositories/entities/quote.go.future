@@ -1,0 +1,13 @@
+package entities
+
+// Quote Record of transaction between client and us
+type Quote struct {
+	ID         string  `json:"id"`
+	ClientID   string  `json:"clientId"`
+	ValidUntil string  `json:"validUntil"`
+	Quantity   float64 `json:"quantity"`
+	Side       int     `json:"side"`
+	Instrument string  `json:"instrument"`
+	Price      float64 `json:"price"`
+	UserID     string  `json:"userId"`
+}

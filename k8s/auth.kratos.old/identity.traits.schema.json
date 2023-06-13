@@ -1,0 +1,46 @@
+{
+    "$id": "http://mydomain.com/schemas/v2/customer.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Auth service",
+    "type": "object",
+    "properties": {
+        "traits": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "title": "E-Mail",
+                    "type": "string",
+                    "format": "email",
+                    "ory.sh/kratos": {
+                        "credentials": {
+                            "password": {
+                                "identifier": true
+                            }
+                        }
+                    }
+                },
+                "firstname": {
+                    "type": "object",
+                    "properties": {
+                        "first": {
+                            "type": "string"
+                        },
+                        "last": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "email", "firstname", "lastname", "company"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

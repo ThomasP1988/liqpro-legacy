@@ -1,0 +1,1 @@
+all price with 8 decimal

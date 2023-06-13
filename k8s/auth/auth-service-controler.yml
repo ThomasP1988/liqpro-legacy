@@ -1,0 +1,45 @@
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: auth-service-super-token
+  labels:
+    app: auth-service
+    role: master
+spec:
+  replicas: 1
+  selector:
+    app: auth-service
+    role: master
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        role: master
+    spec:
+      containers:
+      - name: auth-service-super-token
+        image: supertokens/supertokens-mongodb:2.5
+        ports:
+        - name: auth-service
+          containerPort: 6379
+        env:
+        - name: API_KEYS
+          value: 7244a844-957f-49fc-9c53-0a5dbf3fc27c
+        - name: SUPERTOKENS_HOST
+          value: auth-service
+        - name: SUPERTOKENS_PORT
+          value: "6379"
+        - name: ACCESS_TOKEN_VALIDITY
+          value: "3600"
+        - name: ACCESS_TOKEN_SIGNING_KEY_DYNAMIC
+          value: "true"
+        - name: ACCESS_TOKEN_SIGNING_KEY_UPDATE_INTERVAL
+          value: "24"
+        - name: MONGODB_CONNECTION_URI
+          value: mongodb://thomas:5HVgsVKwwQ2xowPb@cluster0-shard-00-00.0qzfq.mongodb.net:27017,cluster0-shard-00-01.0qzfq.mongodb.net:27017,cluster0-shard-00-02.0qzfq.mongodb.net:27017/<dbname>?ssl=true&replicaSet=atlas-p669nv-shard-0&authSource=admin&retryWrites=true&w=majority
+        - name: MONGODB_DATABASE_NAME
+          value: liqpro
+        - name: COOKIE_SAME_SITE
+          value: none
+        - name: ENABLE_ANTI_CSRF
+          value: "true"

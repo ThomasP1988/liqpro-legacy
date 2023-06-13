@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: exchanges-bitstamp
+spec:
+  replicas: 1
+  selector:
+    app: exchanges-bitstamp
+  template:
+    metadata:
+      name: exchange-bitstamp
+      labels:
+        app: exchanges-bitstamp
+    spec:
+      containers:
+      - name: exchanges-bitstamp
+        image: exchanges/bitstamp
+        imagePullPolicy: Never

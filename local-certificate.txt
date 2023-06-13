@@ -1,0 +1,3 @@
+skip the nginx part:
+
+https://medium.com/internshala-tech/adding-self-trusted-ssl-certificate-for-localhost-on-ubuntu-nginx-c66d70b22e4b

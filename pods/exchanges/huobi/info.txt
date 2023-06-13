@@ -1,0 +1,1 @@
+fiat 2 decimal, crypto max 8 decimal but can be less

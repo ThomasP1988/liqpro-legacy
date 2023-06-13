@@ -1,0 +1,19 @@
+kratos:
+  config:
+    identity:
+      default_schema_url:  file://home/tom/Projects/liquidity-providing/k8s/auth/identity.traits.schema.json
+    dsn: sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    secrets:
+      session:
+        - dolore occaecat nostrud Ut
+        - sit et commodoaute ut voluptate consectetur Duis
+    selfservice:
+      default_browser_return_url: http://127.0.0.1:4455/
+    courier:
+      smtp:
+        connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+  serve:
+    public:
+      cors: 
+        enabled: true
+        debug: true

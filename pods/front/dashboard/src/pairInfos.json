@@ -1,0 +1,18 @@
+{
+    "btceur": {
+        "base": "btc",
+        "quote": "eur",
+        "decimalQuote": 2,
+        "display": "BTC-EUR",
+        "baseTitle": "Bitcoin",
+        "quoteTile": "Euro"
+    },
+    "btcusd": {
+        "base": "btc",
+        "quote": "usd",
+        "decimalQuote": 2,
+        "display": "BTC-USD",
+        "baseTitle": "Bitcoin",
+        "quoteTile": "Dollar"
+    }
+}

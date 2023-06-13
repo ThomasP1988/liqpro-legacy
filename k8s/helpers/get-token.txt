@@ -1,0 +1,4 @@
+kubectl -n kube-system get secret
+kubectl -n kube-system describe secret deployment-controller-token-kw5pt
+
+https://stackoverflow.com/questions/46664104/how-to-sign-in-kubernetes-dashboard

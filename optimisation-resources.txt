@@ -1,0 +1,4 @@
+convert float to string:  https://github.com/cespare/ryu
+cache: https://github.com/dgraph-io/ristretto
+jemalloc vs cgo: https://dgraph.io/blog/post/manual-memory-management-golang-jemalloc/
+jemalloc: https://github.com/jemalloc/jemalloc

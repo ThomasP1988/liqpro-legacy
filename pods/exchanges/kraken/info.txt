@@ -1,0 +1,1 @@
+fiat 4 decimal (2 real), crupto 8 decimal

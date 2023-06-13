@@ -1,0 +1,234 @@
+
+
+.positive-change {
+	-webkit-animation: 1s ease-in-out positive-buysell-button-bg;
+	animation: 1s ease-in-out positive-buysell-button-bg
+}
+
+.negative-change {
+	-webkit-animation: 1s ease-in-out negative-buysell-button-bg;
+	animation: 1s ease-in-out negative-buysell-button-bg
+}
+
+
+@keyframes positive-color {
+	0% {
+		color: #2c2c2c
+	}
+	50% {
+		color: #6eaf0f
+	}
+	100% {
+		color: #2c2c2c
+	}
+}
+
+@-webkit-keyframes negative-color {
+	0% {
+		color: #2c2c2c
+	}
+	50% {
+		color: #e1191d
+	}
+	100% {
+		color: #2c2c2c
+	}
+}
+
+@-moz-keyframes negative-color {
+	0% {
+		color: #2c2c2c
+	}
+	50% {
+		color: #e1191d
+	}
+	100% {
+		color: #2c2c2c
+	}
+}
+
+@-o-keyframes negative-color {
+	0% {
+		color: #2c2c2c
+	}
+	50% {
+		color: #e1191d
+	}
+	100% {
+		color: #2c2c2c
+	}
+}
+
+@keyframes negative-color {
+	0% {
+		color: #2c2c2c
+	}
+	50% {
+		color: #e1191d
+	}
+	100% {
+		color: #2c2c2c
+	}
+}
+
+
+@-webkit-keyframes positive-buysell-button-bg {
+	0%,
+	100% {
+		/* background-color: #f1f1f1 */
+	}
+	50% {
+		background-color: #6bad10
+	}
+}
+
+@keyframes positive-buysell-button-bg {
+	0%,
+	100% {
+		/* background-color: #fff */
+	}
+	50% {
+		background-color: #6bad10
+	}
+}
+
+@-webkit-keyframes positive-buysell-button-border {
+	0%,
+	100% {
+		/* border-color: #f1f1f1 */
+	}
+	50% {
+		border-color: #6bad10
+	}
+}
+
+@keyframes positive-buysell-button-border {
+	0%,
+	100% {
+		/* border-color: #f1f1f1 */
+	}
+	50% {
+		border-color: #6bad10
+	}
+}
+
+@-webkit-keyframes positive-buysell-button-title {
+	0%,
+	100% {
+		background-color: #54626e
+	}
+	50% {
+		background-color: #6bad10
+	}
+}
+
+@keyframes positive-buysell-button-title {
+	0%,
+	100% {
+		background-color: #54626e
+	}
+	50% {
+		background-color: #6bad10
+	}
+}
+
+@-webkit-keyframes positive-buysell-button-number {
+	0%,
+	100% {
+		color: #2c2c2c
+	}
+	50% {
+		color: #fff
+	}
+}
+
+@keyframes positive-buysell-button-number {
+	0%,
+	100% {
+		color: #2c2c2c
+	}
+	50% {
+		/* color: #fff */
+	}
+}
+
+@-webkit-keyframes negative-buysell-button-bg {
+	0%,
+	100% {
+		/* background-color: #f1f1f1 */
+	}
+	50% {
+		background-color: #d0021b
+	}
+}
+
+@keyframes negative-buysell-button-bg {
+	0%,
+	100% {
+		/* background-color: #fff */
+	}
+	50% {
+		background-color: #d0021b
+	}
+}
+
+@-webkit-keyframes negative-buysell-button-border {
+	0%,
+	100% {
+		/* border-color: #f1f1f1 */
+	}
+	50% {
+		border-color: #d0021b
+	}
+}
+
+@keyframes negative-buysell-button-border {
+	0%,
+	100% {
+		/* border-color: #f1f1f1 */
+	}
+	50% {
+		border-color: #d0021b
+	}
+}
+
+@-webkit-keyframes negative-buysell-button-title {
+	0%,
+	100% {
+		background-color: #54626e
+	}
+	50% {
+		background-color: #d0021b
+	}
+}
+
+@keyframes negative-buysell-button-title {
+	0%,
+	100% {
+		background-color: #54626e
+	}
+	50% {
+		background-color: #d0021b
+	}
+}
+
+@-webkit-keyframes negative-buysell-button-number {
+	0%,
+	100% {
+		color: #2c2c2c
+	}
+	50% {
+		/* color: #fff */
+	}
+}
+
+@keyframes negative-buysell-button-number {
+	0%,
+	100% {
+		color: #2c2c2c
+	}
+	50% {
+		/* color: #fff */
+	}
+}
+
